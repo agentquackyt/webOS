@@ -1,0 +1,97 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--os-background);
+    color: var(--os-text-color);
+    height: 100dvh;
+    width: 100dvw;
+    scrollbar-width: none; /* Firefox */
+    overflow: hidden;
+
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+}
+
+.os-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    font-size: 0.875rem;
+    z-index: 1000;
+}
+
+.os-header-left,
+.os-header-right {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.os-desktop {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+    padding-bottom: 110px;
+    flex: 1;
+}
+
+.desktop-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+    height: 100%;
+}
+
+.desktop-icon img {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-top: 8px;
+}
+
+.desktop-icon span {
+    text-align: center;
+    font-size: 0.875rem;
+    line-height: 1.2;
+    max-width: 100%;
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: calc(1.2em * 2);
+}
+
+.os-windows {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.os-windows > * {
+    pointer-events: all;
+}
+

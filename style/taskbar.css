@@ -1,0 +1,144 @@
+
+.os-taskbar-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    width: 100%;
+    height: 90px;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 0.5rem;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.os-taskbar {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--os-taskbar-background);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: var(--os-taskbar-border-radius);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    pointer-events: all;
+    transition: gap 0.3s ease-in-out, padding 0.3s ease-in-out;
+}
+
+.os-taskbar:has(.os-taskbar-item:hover) {
+    gap: 1rem;
+}
+
+.os-taskbar-item {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: center bottom;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    margin: 0;
+    user-select: none;
+}
+
+.os-taskbar-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    pointer-events: none;
+}
+
+/* Hover effect on the item itself - scales to 1.6x */
+.os-taskbar-item:hover {
+    transform: scale(1.6);
+    margin: 0 0.75rem;
+}
+
+/* Adjacent items (1 step away) - scales to 1.35x */
+.os-taskbar-item:hover + .os-taskbar-item,
+.os-taskbar-item:has(+ .os-taskbar-item:hover) {
+    transform: scale(1.35);
+    margin: 0 0.5rem;
+}
+
+/* Items 2 steps away - scales to 1.2x */
+.os-taskbar-item:hover + .os-taskbar-item + .os-taskbar-item,
+.os-taskbar-item:has(+ .os-taskbar-item + .os-taskbar-item:hover) {
+    transform: scale(1.2) ;
+    margin: 0 0.25rem;
+}
+
+/* Items 3 steps away - scales to 1.1x */
+.os-taskbar-item:hover + .os-taskbar-item + .os-taskbar-item + .os-taskbar-item,
+.os-taskbar-item:has(+ .os-taskbar-item + .os-taskbar-item + .os-taskbar-item:hover) {
+    transform: scale(1.1);
+    margin: 0 0.1rem;
+}
+
+/* Active/running indicator */
+.os-taskbar-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--os-text-color);
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
+/* Hover tooltip */
+.os-taskbar-item:hover::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--os-taskbar-background);
+    color: var(--os-text-color);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    animation: tooltipFadeIn 0.2s ease-out 0.5s forwards;
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* Separator between apps */
+.os-taskbar-separator {
+    width: 1px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 0.25rem;
+    transition: height 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Adjust container height when hovering */
+.os-taskbar:hover {
+    padding-bottom: 1rem;
+}
+ 
+

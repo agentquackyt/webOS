@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebOS</title>
+    <link rel="stylesheet" href="style/index.css">
+</head>
+
+<body>
+    <section class="os-lock-screen" id="os-lock-screen" aria-live="polite">
+        <div class="os-lock-screen-backdrop"></div>
+        <div class="os-lock-screen-content" role="button" tabindex="0" aria-label="Unlock desktop">
+            <p class="os-lock-screen-date" id="lock-date"></p>
+            <h1 class="os-lock-screen-time" id="lock-time"></h1>
+            <p class="os-lock-screen-hint">Click anywhere or press Enter to unlock</p>
+        </div>
+    </section>
+    <header class="os-header">
+        <div class="os-header-left">
+            <span id="current-time"></span>
+        </div>
+        <div class="os-header-right">
+            <!-- Future icons for Wi-Fi, battery, etc. -->
+        </div>
+    </header>
+    <main class="os-desktop" id="os-desktop">
+
+    </main>
+    <aside class="os-taskbar-container">
+        <div class="os-taskbar" id="os-taskbar">
+            <div class="os-taskbar-item" data-tooltip="Finder">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Finder_Icon_macOS_Big_Sur.png/240px-Finder_Icon_macOS_Big_Sur.png" alt="Finder">
+            </div>
+        </div>
+    </aside>
+    <script src="scripts/entry.ts"></script>
+    <div class="os-windows" id="os-windows"></div>
+    <img src="./icons/calculator.png" style="display: none;" alt="">
+</body>
+</html>

@@ -1,0 +1,101 @@
+.window {
+    background: var(--os-window-content-background);
+    border: 1px solid var(--os-window-border-color);
+    border-radius: var(--os-window-border-radius);
+    box-shadow: var(--os-window-box-shadow);
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.window-header {
+    background: var(--os-header-background);
+    border-top-left-radius: var(--os-window-border-radius);
+    border-top-right-radius: var(--os-window-border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .75rem;
+    border-bottom: 1px solid var(--os-window-border-color);
+}
+
+.window-header>h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--os-text-color);
+}
+
+.window-btn-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.window-btn {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+}
+
+.window-btn:hover {
+    filter: brightness(1.2);
+}
+
+.window-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.window-minimize {
+    background: var(--os-btn-header-minimize);
+}
+.window-maximize {
+    background: var(--os-btn-header-maximize);
+}
+.window-close {
+    background: var(--os-btn-header-close);
+}
+
+.window-content {
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+
+.notification-content {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.window>iframe {
+    border: none;
+    border-bottom-left-radius: var(--os-window-border-radius);
+    border-bottom-right-radius: var(--os-window-border-radius);
+}
+
+.window-resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+    z-index: 10;
+}
+
+.window-resize-handle::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 12px 12px;
+    border-color: transparent transparent var(--os-window-border-color) transparent;
+    opacity: 0.5;
+}

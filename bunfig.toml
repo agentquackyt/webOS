@@ -1,0 +1,6 @@
+[bundle]
+# Disable asset hashing
+assetNaming = "[name].[ext]"
+
+# Copy these directories as-is
+publicDir = "."
