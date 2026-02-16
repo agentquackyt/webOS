@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "bun run server.ts",
-    "build": "bun build index.html --outdir=docs --minify"
+    "build": "rm -rf docs && bun build index.html --outdir=docs --minify && cp -r icons docs/"
   },
   "devDependencies": {
     "@types/bun": "latest"
