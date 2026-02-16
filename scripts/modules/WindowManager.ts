@@ -9,6 +9,7 @@ class WindowManager {
     private lastBasePosition: Coords = { x: 100, y: 100 };
     private nextWindowPosition: Coords = { x: 100, y: 100 };
     private positionOffset: Coords = { x: 30, y: 30 };
+    private currentZIndex: number = 100;
 
     private constructor() {
         this.windows = new Map();
@@ -38,9 +39,21 @@ class WindowManager {
                 case "minimize":
                     targetWindow.minimize();
                     break;
+                case "focus":
+                    this.bringWindowToFront(uuid);
+                    break;
                 // Future actions like maximize can be handled here
             }
         });
+    }
+
+    private bringWindowToFront(uuid: string): void {
+        const targetWindow = this.windows.get(uuid);
+        if (!targetWindow) return;
+
+        this.currentZIndex++;
+        const windowElement = targetWindow.getElement();
+        windowElement.style.zIndex = String(this.currentZIndex);
     }
 
     public registerWindow(window: WebosWindow): void {
@@ -49,7 +62,10 @@ class WindowManager {
         this.windows.set(window.getUUID(), window);
         if (this.windowGroupElement) {
             window.updatePosition(this.nextWindowPosition.x, this.nextWindowPosition.y);
-            this.windowGroupElement.appendChild(window.render());
+            const renderedWindow = window.render();
+            this.currentZIndex++;
+            renderedWindow.style.zIndex = String(this.currentZIndex);
+            this.windowGroupElement.appendChild(renderedWindow);
         }
         
         this.nextWindowPosition.x += this.positionOffset.x;

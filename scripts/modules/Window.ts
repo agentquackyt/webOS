@@ -30,6 +30,7 @@ abstract class WebosWindow {
     abstract render(): HTMLElement;
 
     getUUID(): string { return this.UUID; }
+    getElement(): HTMLElement { return this.mainElement; }
     isWindowHidden(): boolean { return this.isHidden; }
 
     close(): void {
@@ -61,6 +62,12 @@ abstract class WebosWindow {
             if ((e.target as HTMLElement).classList.contains("window-btn")) {
                 return;
             }
+
+            // Bring window to front
+            const focusEvent = new CustomEvent("webos-window", {
+                detail: { uuid: this.UUID, action: "focus" }
+            });
+            window.dispatchEvent(focusEvent);
 
             this.isDragging = true;
             this.dragOffsetX = e.clientX - this.x;
