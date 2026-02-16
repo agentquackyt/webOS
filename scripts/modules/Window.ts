@@ -44,7 +44,7 @@ abstract class WebosWindow {
 
     restore(): void {
         this.isHidden = false;
-        this.mainElement.style.display = "block";
+        this.mainElement.style.display = "flex";
     }
 
     updatePosition(x: number, y: number): void {
