@@ -4,13 +4,17 @@
     z-index: 2000;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    flex-direction: column;
     padding: 2rem;
     color: var(--os-text-color);
-    background: transparent;
+    background: #0c1223dd;
     opacity: 1;
     pointer-events: all;
-    transition: opacity 320ms ease;
+    transition: opacity 400ms ease;
+    backdrop-filter: blur(var(--os-background-blur));
+    animation: fadeIn 2s ease forwards;
+    padding-top: 35vh;
 }
 
 .os-lock-screen.hidden {
@@ -18,40 +22,13 @@
     pointer-events: none;
 }
 
-.os-lock-screen-backdrop {
-    position: absolute;
-    inset: 0;
-    background: var(--os-background);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    transform: scale(1.03);
-    filter: blur(calc(var(--os-background-blur) * 0.5));
-}
-
-.os-lock-screen-backdrop::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--os-taskbar-background);
-    backdrop-filter: blur(var(--os-background-blur));
-    -webkit-backdrop-filter: blur(var(--os-background-blur));
-}
-
 .os-lock-screen-content {
-    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 0.4rem;
-    width: min(520px, 92vw);
     padding: 2rem 2.5rem;
-    border-radius: var(--os-window-border-radius);
-    background: var(--os-taskbar-background);
-    border: 1px solid var(--os-window-border-color);
-    box-shadow: var(--os-window-box-shadow);
-    backdrop-filter: blur(var(--os-background-blur));
-    -webkit-backdrop-filter: blur(var(--os-background-blur));
     text-align: center;
     user-select: none;
     cursor: pointer;
@@ -60,7 +37,6 @@
 .os-lock-screen-date {
     margin: 0;
     font-size: 1rem;
-    color: var(--os-text-color-secondary);
     text-transform: capitalize;
 }
 
@@ -74,11 +50,27 @@
 
 .os-lock-screen-hint {
     margin: 0.5rem 0 0;
-    color: var(--os-text-color-secondary);
     font-size: 0.9rem;
+    opacity: 0.8;
 }
 
-.os-lock-screen-content:focus-visible {
-    outline: 2px solid var(--os-window-border-color-active);
-    outline-offset: 4px;
+@keyframes fadeIn {
+    from {
+        background-color: #050915;
+        color: transparent;
+    }
+    25% {
+        color: transparent;
+    }
+    39% {
+        background-color: #0a0f1eea;
+        backdrop-filter: blur(calc(var(--os-background-blur) * 4));
+
+    }
+
+    to {
+        background-color: #0c1223dd;
+        color: var(--os-text);
+        backdrop-filter: blur(var(--os-background-blur));
+    }
 }

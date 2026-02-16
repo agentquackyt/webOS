@@ -88,6 +88,11 @@ class DrawingWindow extends BasicWindow {
 
         const colors = ["#000000", "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#ffffff"];
         
+
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.style.border = `6px solid transparent`;
+        card.innerText = "Current Color";
         colors.forEach(color => {
             const colorBtn = document.createElement("button");
             colorBtn.classList.add("square");
@@ -98,14 +103,32 @@ class DrawingWindow extends BasicWindow {
             
             colorBtn.addEventListener("click", () => {
                 this.currentColor = color;
+                card.style.borderColor = color === "#ffffff" ? "var(--os-window-border-color)" : color;
             });
             toolbar.appendChild(colorBtn);
         });
 
+        card.style.marginLeft = "auto";
+
+        toolbar.appendChild(card);
+        const downloadBtn = document.createElement("button");
+        downloadBtn.textContent = "Download";
+        downloadBtn.style.width = "auto";
+        downloadBtn.style.marginLeft = "auto";
+
+        downloadBtn.addEventListener("click", () => {
+            if (this.canvas) {
+                const link = document.createElement("a");
+                link.download = "drawing.png";
+                link.href = this.canvas.toDataURL();
+                link.click();
+            }
+        });
+        toolbar.appendChild(downloadBtn);
+
         const clearBtn = document.createElement("button");
         clearBtn.textContent = "Clear";
         clearBtn.style.width = "auto";
-        clearBtn.style.marginLeft = "auto";
         clearBtn.addEventListener("click", () => {
             if (this.ctx && this.canvas) {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -137,7 +160,7 @@ class DrawingWindow extends BasicWindow {
 
 class PaintApp extends App {
     constructor() {
-        super("Paint", "https://upload.wikimedia.org/wikipedia/commons/c/c4/Pain.net_logo.jpg");
+        super("Paint", "./icons/paint.png");
     }
 
     override launch() {

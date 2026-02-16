@@ -116,7 +116,7 @@ class CalculatorWindow extends BasicWindow {
 
 class CalculatorApp extends App {
     constructor() {
-        super("Calculator", "https://upload.wikimedia.org/wikipedia/commons/3/30/Calculator_Image.png");
+        super("Calculator", "./icons/calc.png");
     }
 
     override launch() {

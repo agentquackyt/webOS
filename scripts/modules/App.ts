@@ -1,6 +1,7 @@
 import { IframeWindow, NotificationWindow, WebosWindow } from "./Window";
 import { WindowManager } from "./WindowManager";
 import { TaskbarManager } from "./TaskbarManager";
+import { ContextMenuManager } from "./ContextMenuManager";
 
 class App {
     private name: string;
@@ -8,6 +9,8 @@ class App {
     private appIcon: string | null = null;
     public windows: WebosWindow[] = [];
     private desktopIcon: HTMLElement | null = null;
+    private pinned: boolean = false;
+    private canUnpin: boolean = true;
 
     constructor(name: string, appIcon?: string) {
         this.name = name;
@@ -41,6 +44,13 @@ class App {
             const event = new CustomEvent("webos-desktop", { detail: { uuid: this.uuid, action: "launch" } });
             window.dispatchEvent(event);
         });
+        
+        // Add right-click context menu
+        this.desktopIcon.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            ContextMenuManager.getInstance().show(e.pageX, e.pageY, this);
+        });
+        
         this.desktopIcon.className = "desktop-icon";
         const img = document.createElement("img");
         img.src = this.appIcon || "https://placehold.co/64";
@@ -84,6 +94,45 @@ class App {
 
     hasOpenWindows(): boolean {
         return this.windows.length > 0;
+    }
+
+    pushWindow(window: WebosWindow): void {
+        this.windows.push(window);
+        WindowManager.getInstance().registerWindow(window);
+        TaskbarManager.getInstance().registerWindow(this.uuid, window.getUUID());
+        console.log(`[App] Launched app: ${this.getName()} with UUID: ${this.getUUID()}`);
+    }
+
+    pinToTaskbar(): void {
+        this.pinned = true;
+        TaskbarManager.getInstance().pinApp(this);
+        console.log(`[App] Pinned ${this.name} to taskbar`);
+    }
+
+    unpinFromTaskbar(): void {
+        if (!this.canUnpin) {
+            console.log(`[App] Cannot unpin ${this.name} - unpinning disabled`);
+            return;
+        }
+        this.pinned = false;
+        TaskbarManager.getInstance().unpinApp(this.uuid);
+        console.log(`[App] Unpinned ${this.name} from taskbar`);
+    }
+
+    isPinned(): boolean {
+        return this.pinned;
+    }
+
+    setPinned(pinned: boolean): void {
+        this.pinned = pinned;
+    }
+
+    canBeUnpinned(): boolean {
+        return this.canUnpin;
+    }
+
+    setCanUnpin(canUnpin: boolean): void {
+        this.canUnpin = canUnpin;
     }
 }
 

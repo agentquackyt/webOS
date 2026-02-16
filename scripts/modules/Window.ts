@@ -170,6 +170,13 @@ abstract class WebosWindow {
 
         return header;
     }
+
+    applyResize(newWidth: number, newHeight: number): void {
+        this.width = newWidth;
+        this.height = newHeight;
+        this.mainElement.style.width = `${newWidth}px`;
+        this.mainElement.style.height = `${newHeight}px`;
+    }
 }
 
 class NotificationWindow extends WebosWindow {

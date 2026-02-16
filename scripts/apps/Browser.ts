@@ -114,7 +114,7 @@ class BrowserWindow extends BasicWindow {
 
 class BrowserApp extends App {
     constructor() {
-        super("Browser", "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Chrome_icon_%28September_2014%29.svg");
+        super("Browser", "./icons/browser.png");
     }
 
     override launch() {

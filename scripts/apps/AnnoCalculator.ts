@@ -6,7 +6,7 @@ import { TaskbarManager } from "../modules/TaskbarManager";
 class AnnoCalculatorApp extends App {
     
     constructor() {
-        super("Anno Calculator", "https://anno-calculator.org/style/anno_icon.png");
+        super("Anno 117 Tool", "./icons/anno.png");
     }
     
     override launch() {

@@ -1,6 +1,7 @@
 import type { App } from "./App";
 import { DesktopManager } from "./DesktopManager";
 import { WindowManager } from "./WindowManager";
+import { ContextMenuManager } from "./ContextMenuManager";
 
 class TaskbarManager {
     private static instance: TaskbarManager;
@@ -8,12 +9,14 @@ class TaskbarManager {
     private taskbarItems: Map<string, HTMLElement>; // Maps app UUID to taskbar item
     private appWindows: Map<string, Set<string>>; // Maps app UUID to set of window UUIDs
     private windowToApp: Map<string, string>; // Maps window UUID to app UUID
+    private pinnedApps: Map<string, App>; // Maps app UUID to App for pinned apps
 
     private constructor() {
         this.taskbar = document.getElementById("os-taskbar") as HTMLElement;
         this.taskbarItems = new Map();
         this.appWindows = new Map();
         this.windowToApp = new Map();
+        this.pinnedApps = new Map();
         this.registerEventListeners();
     }
 
@@ -109,6 +112,12 @@ class TaskbarManager {
             this.handleTaskbarItemClick(app.getUUID());
         });
 
+        // Add right-click context menu
+        item.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            ContextMenuManager.getInstance().show(e.pageX, e.pageY, app);
+        });
+
         this.taskbar.appendChild(item);
         this.taskbarItems.set(app.getUUID(), item);
         console.log(`[TaskbarManager] Added taskbar item for ${app.getName()}`);
@@ -117,14 +126,31 @@ class TaskbarManager {
     private removeTaskbarItem(uuid: string) {
         const item = this.taskbarItems.get(uuid);
         if (item) {
-            item.remove();
-            this.taskbarItems.delete(uuid);
-            console.log(`[TaskbarManager] Removed taskbar item for app ${uuid}`);
+            // If app is pinned, just mark it as inactive instead of removing
+            if (this.pinnedApps.has(uuid)) {
+                item.classList.remove("active");
+                console.log(`[TaskbarManager] Marked pinned app ${uuid} as inactive`);
+            } else {
+                item.remove();
+                this.taskbarItems.delete(uuid);
+                console.log(`[TaskbarManager] Removed taskbar item for app ${uuid}`);
+            }
         }
     }
 
     private handleTaskbarItemClick(appUUID: string): void {
         const windows = this.appWindows.get(appUUID);
+        
+        // If app is pinned but not running, launch it
+        if ((!windows || windows.size === 0) && this.pinnedApps.has(appUUID)) {
+            const app = this.pinnedApps.get(appUUID);
+            if (app) {
+                const event = new CustomEvent("webos-desktop", { detail: { uuid: appUUID, action: "launch" } });
+                window.dispatchEvent(event);
+            }
+            return;
+        }
+        
         if (!windows || windows.size === 0) return;
 
         const windowManager = WindowManager.getInstance();
@@ -160,6 +186,82 @@ class TaskbarManager {
             } else {
                 item.classList.remove("active");
             }
+        }
+    }
+
+    public pinApp(app: App): void {
+        this.pinnedApps.set(app.getUUID(), app);
+        
+        // Add taskbar item if not already present
+        if (!this.taskbarItems.has(app.getUUID())) {
+            this.addTaskbarItem(app);
+        }
+        
+        // Save pinned apps to localStorage
+        this.savePinnedApps();
+        console.log(`[TaskbarManager] Pinned app: ${app.getName()}`);
+    }
+
+    public unpinApp(uuid: string): void {
+        this.pinnedApps.delete(uuid);
+        
+        // If app has no open windows, remove taskbar item
+        const windows = this.appWindows.get(uuid);
+        if (!windows || windows.size === 0) {
+            const item = this.taskbarItems.get(uuid);
+            if (item) {
+                item.remove();
+                this.taskbarItems.delete(uuid);
+            }
+        }
+        
+        // Save pinned apps to localStorage
+        this.savePinnedApps();
+        console.log(`[TaskbarManager] Unpinned app: ${uuid}`);
+    }
+
+    private savePinnedApps(): void {
+        const pinnedData = Array.from(this.pinnedApps.values()).map(app => ({
+            name: app.getName(),
+            icon: app.getAppIcon()
+        }));
+        localStorage.setItem('webos-pinned-apps', JSON.stringify(pinnedData));
+    }
+
+    public loadPinnedApps(): void {
+        const stored = localStorage.getItem('webos-pinned-apps');
+        if (stored) {
+            try {
+                const pinnedData = JSON.parse(stored);
+                // Note: We need to get the actual App instances from DesktopManager
+                // This will be called after apps are registered
+                console.log(`[TaskbarManager] Found ${pinnedData.length} pinned apps in storage`);
+            } catch (e) {
+                console.error('[TaskbarManager] Failed to load pinned apps:', e);
+            }
+        }
+    }
+
+    public getPinnedAppNames(): string[] {
+        const stored = localStorage.getItem('webos-pinned-apps');
+        if (stored) {
+            try {
+                const pinnedData = JSON.parse(stored);
+                return pinnedData.map((data: any) => data.name);
+            } catch (e) {
+                console.error('[TaskbarManager] Failed to get pinned app names:', e);
+            }
+        }
+        return [];
+    }
+
+    public restorePinnedApp(app: App): void {
+        const pinnedNames = this.getPinnedAppNames();
+        if (pinnedNames.includes(app.getName())) {
+            app.setPinned(true);
+            this.pinnedApps.set(app.getUUID(), app);
+            this.addTaskbarItem(app);
+            console.log(`[TaskbarManager] Restored pinned app: ${app.getName()}`);
         }
     }
 }

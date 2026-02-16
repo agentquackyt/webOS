@@ -2,11 +2,13 @@ import AnnoCalculatorApp from "./apps/AnnoCalculator";
 import BrowserApp from "./apps/Browser";
 import CalculatorApp from "./apps/Calculator";
 import PaintApp from "./apps/Drawing";
-import GoogleMapsApp from "./apps/GoogleMaps";
+import { AboutMeApp } from "./apps/Misc";
 import RickRollApp from "./apps/RickRoll";
 import { App } from "./modules/App";
 import { DesktopManager } from "./modules/DesktopManager";
 import { TaskbarManager } from "./modules/TaskbarManager";
+import { ContextMenuManager } from "./modules/ContextMenuManager";
+import GrapherApp from "./apps/Grapher";
 
 const lockScreenElement = document.getElementById("os-lock-screen");
 const lockTimeElement = document.getElementById("lock-time");
@@ -14,24 +16,29 @@ const lockDateElement = document.getElementById("lock-date");
 let isLocked = true;
 
 function setupWindows() {
-    // Initialize TaskbarManager
+    // Initialize TaskbarManager and ContextMenuManager
     TaskbarManager.getInstance();
+    ContextMenuManager.getInstance();
     
     const testApp = new App("Test App");
+    const aboutMeApp = new AboutMeApp();
     const rickRollApp = new RickRollApp();
     const annoCalculatorApp = new AnnoCalculatorApp();
     const calculatorApp = new CalculatorApp();
     const browserApp = new BrowserApp();
-    const googleMapsApp = new GoogleMapsApp();
     const paintApp = new PaintApp();
+    const grapherApp = new GrapherApp();
 
-    DesktopManager.getInstance().registerApp(testApp);
+    DesktopManager.getInstance().registerApp(aboutMeApp);
+    // DesktopManager.getInstance().registerApp(testApp);
     DesktopManager.getInstance().registerApp(rickRollApp);
     DesktopManager.getInstance().registerApp(calculatorApp);
     DesktopManager.getInstance().registerApp(browserApp);
-    DesktopManager.getInstance().registerApp(googleMapsApp);
     DesktopManager.getInstance().registerApp(paintApp);
+    DesktopManager.getInstance().registerApp(grapherApp);
     DesktopManager.getInstance().registerApp(annoCalculatorApp);
+
+    // window.dispatchEvent(new CustomEvent("webos-desktop", { detail: { uuid: aboutMeApp.getUUID(), action: "launch" } }));
 }
 
 function updateTime() {
@@ -39,7 +46,7 @@ function updateTime() {
     const now = new Date();
 
     if (timeElement) {
-        const timeString = now.toLocaleTimeString('de-de', {
+        const timeString = now.toLocaleTimeString('en-us', {
             weekday: 'short',
             day: '2-digit',
             month: 'short',
@@ -51,7 +58,7 @@ function updateTime() {
     }
 
     if (lockTimeElement) {
-        lockTimeElement.textContent = now.toLocaleTimeString('de-de', {
+        lockTimeElement.textContent = now.toLocaleTimeString('en-us', {
             hour: '2-digit',
             minute: '2-digit',
             hour12: false
@@ -59,7 +66,7 @@ function updateTime() {
     }
 
     if (lockDateElement) {
-        lockDateElement.textContent = now.toLocaleDateString('de-de', {
+        lockDateElement.textContent = now.toLocaleDateString('en-us', {
             weekday: 'long',
             day: '2-digit',
             month: 'long'
