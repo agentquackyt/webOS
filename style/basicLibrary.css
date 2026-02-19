@@ -37,6 +37,9 @@
 }
 
 .basic button, select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: none;
     background: var(--os-header-background);
     padding: 0.75rem;
@@ -55,7 +58,7 @@
 }
 
 .basic .square {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1 / 1 !important;
     width: 100%;
 }
 

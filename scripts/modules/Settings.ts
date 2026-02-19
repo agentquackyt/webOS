@@ -56,7 +56,11 @@ class SettingsManager {
 
     private applyCssSettings(settings: Settings): void {
         // Apply settings to the system if not device theme or if background/icon pack is set
-        if(settings.background !== '') document.documentElement.style.setProperty('--os-background', settings.background);
+        if (settings.background !== '') {
+            document.documentElement.style.setProperty('--os-background', `url(${settings.background})`);
+        } else {
+            document.documentElement.style.removeProperty('--os-background');
+        }
     }
 }
 

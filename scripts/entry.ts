@@ -10,6 +10,8 @@ import { ContextMenuManager } from "./modules/ContextMenuManager";
 import GrapherApp from "./apps/Grapher";
 import { SettingsManager } from "./modules/Settings";
 import { GamesHubApp } from "./apps/GamesHub";
+import { SettingsApp } from "./apps/SettingsApp";
+import AnnoApp from "./apps/AnnoCalculator";
 
 const lockScreenElement = document.getElementById("os-lock-screen");
 const lockTimeElement = document.getElementById("lock-time");
@@ -23,10 +25,12 @@ function setupWindows() {
     ContextMenuManager.getInstance();
 
     DesktopManager.getInstance().registerApp(new AboutMeApp());
+    DesktopManager.getInstance().registerApp(new SettingsApp());
     DesktopManager.getInstance().registerApp(new RickRollApp());
-    DesktopManager.getInstance().registerApp(new CalculatorApp());
+    DesktopManager.getInstance().registerApp(new AnnoApp());
     DesktopManager.getInstance().registerApp(new BrowserApp());
     DesktopManager.getInstance().registerApp(new PaintApp());
+    DesktopManager.getInstance().registerApp(new CalculatorApp());
     DesktopManager.getInstance().registerApp(new GrapherApp());
     DesktopManager.getInstance().registerApp(new MarsIncApp());
     DesktopManager.getInstance().registerApp(new GamesHubApp());

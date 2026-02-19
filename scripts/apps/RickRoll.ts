@@ -7,7 +7,7 @@ class RickRollApp extends App {
     
     constructor() {
         //super("Rick Roll App", "https://www.rw-designer.com/icon-image/22109-256x256x32.png");
-        super("Rick Roll App", "./icons/star.png");
+        super("Rick Roll App", "./icons/rickroll.png");
     }
     
     override launch() {
