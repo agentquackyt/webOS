@@ -39,10 +39,12 @@ class WindowManager {
                 case "minimize":
                     targetWindow.minimize();
                     break;
+                case "maximize":
+                    targetWindow.maximize();
+                    break;
                 case "focus":
                     this.bringWindowToFront(uuid);
                     break;
-                // Future actions like maximize can be handled here
             }
         });
     }

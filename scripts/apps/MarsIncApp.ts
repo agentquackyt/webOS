@@ -3,14 +3,14 @@ import { IframeWindow } from "../modules/Window";
 import { WindowManager } from "../modules/WindowManager";
 import { TaskbarManager } from "../modules/TaskbarManager";
 
-class AnnoCalculatorApp extends App {
+class MarsIncApp extends App {
     
     constructor() {
-        super("Anno 117 Tool", "./icons/anno.png");
+        super("Mars Inc.", "./icons/rocket.png");
     }
     
     override launch() {
-        let annoWindow = new IframeWindow(100, 100, 400, 650, "https://anno-calculator.org/", true, "Anno Calculator");
+        let annoWindow = new IframeWindow(100, 100, 800, 650, "https://agentquackyt.github.io/Mars-Inc/", true, "Mars Inc. (My other flavortown project)");
         this.windows.push(annoWindow);
 
         WindowManager.getInstance().registerWindow(annoWindow);
@@ -19,4 +19,4 @@ class AnnoCalculatorApp extends App {
     }
 }
 
-export default AnnoCalculatorApp;
+export default MarsIncApp;

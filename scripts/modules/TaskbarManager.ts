@@ -64,14 +64,9 @@ class TaskbarManager {
                     this.windowToApp.delete(uuid);
                 }
             } else if (action === "minimize") {
-                // Update taskbar item visual state if needed
-                const appUUID = this.windowToApp.get(uuid);
-                if (appUUID) {
-                    const item = this.taskbarItems.get(appUUID);
-                    if (item) {
-                        item.classList.remove("active");
-                    }
-                }
+                // Do not toggle taskbar "active" on minimize —
+                // an app with open windows should remain shown as active
+                // even when all its windows are minimized.
             }
         });
     }
@@ -83,6 +78,18 @@ class TaskbarManager {
         }
         this.appWindows.get(appUUID)!.add(windowUUID);
         this.windowToApp.set(windowUUID, appUUID);
+
+        // Ensure the taskbar item exists and is marked active while any
+        // windows for the app are present (including minimized windows).
+        const item = this.taskbarItems.get(appUUID);
+        if (item) {
+            item.classList.add("active");
+        } else {
+            const app = DesktopManager.getInstance().getApp(appUUID);
+            if (app) {
+                this.addTaskbarItem(app, true);
+            }
+        }
     }
 
     /*
@@ -91,14 +98,17 @@ class TaskbarManager {
         </div>
      */
 
-    private addTaskbarItem(app: App) {
+    private addTaskbarItem(app: App, isActive: boolean = true): void {
         // Don't add duplicate items
         if (this.taskbarItems.has(app.getUUID())) {
             return;
         }
 
         const item = document.createElement("div");
-        item.classList.add("os-taskbar-item", "active");
+        item.classList.add("os-taskbar-item");
+        if (isActive) {
+            item.classList.add("active");
+        }
         item.dataset.tooltip = app.getName();
         item.dataset.appUuid = app.getUUID();
         
@@ -181,7 +191,8 @@ class TaskbarManager {
         // Update taskbar item state
         const item = this.taskbarItems.get(appUUID);
         if (item) {
-            if (hasHiddenWindow) {
+            const windows = this.appWindows.get(appUUID);
+            if (windows && windows.size > 0) {
                 item.classList.add("active");
             } else {
                 item.classList.remove("active");
@@ -194,7 +205,7 @@ class TaskbarManager {
         
         // Add taskbar item if not already present
         if (!this.taskbarItems.has(app.getUUID())) {
-            this.addTaskbarItem(app);
+            this.addTaskbarItem(app, false);
         }
         
         // Save pinned apps to localStorage
@@ -260,7 +271,8 @@ class TaskbarManager {
         if (pinnedNames.includes(app.getName())) {
             app.setPinned(true);
             this.pinnedApps.set(app.getUUID(), app);
-            this.addTaskbarItem(app);
+            // Restored pinned apps should start inactive until they have windows
+            this.addTaskbarItem(app, false);
             console.log(`[TaskbarManager] Restored pinned app: ${app.getName()}`);
         }
     }

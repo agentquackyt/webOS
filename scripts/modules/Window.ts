@@ -17,6 +17,10 @@ abstract class WebosWindow {
     private resizeStartWidth: number = 0;
     private resizeStartHeight: number = 0;
 
+    private isMaximized: boolean = false;
+    private preMaximizeState: { x: number, y: number, width: number | undefined, height: number | undefined } | null = null;
+    private desktopResizeObserver: ResizeObserver | null = null;
+
     constructor(x: number, y: number, width?: number, height?: number, resizable: boolean = false) {
         this.x = x;
         this.y = y;
@@ -34,6 +38,8 @@ abstract class WebosWindow {
     isWindowHidden(): boolean { return this.isHidden; }
 
     close(): void {
+
+        this.desktopResizeObserver?.disconnect();
         this.mainElement.remove();
     }
 
@@ -45,6 +51,69 @@ abstract class WebosWindow {
     restore(): void {
         this.isHidden = false;
         this.mainElement.style.display = "flex";
+    }
+
+    private applyMaximizeBounds(desktop: HTMLElement): void {
+        const rect = desktop.getBoundingClientRect();
+        const style = getComputedStyle(desktop);
+        const pl = parseFloat(style.paddingLeft) / 3;
+        const pt = 0;
+        const pr = parseFloat(style.paddingRight) / 3;
+        const pb = parseFloat(style.paddingBottom);
+
+        const maxX = rect.left + pl;
+        const maxY = rect.top + pt;
+        const maxW = rect.width - pl - pr;
+        const maxH = rect.height - pt - pb;
+
+        this.updatePosition(maxX, maxY);
+        this.width = maxW;
+        this.height = maxH;
+        this.mainElement.style.width = `${maxW}px`;
+        this.mainElement.style.height = `${maxH}px`;
+    }
+
+    maximize(): void {
+        const desktop = document.getElementById("os-desktop");
+        if (!desktop) return;
+
+        if (this.isMaximized) {
+            // Restore pre-maximize state
+            if (this.preMaximizeState) {
+                this.updatePosition(this.preMaximizeState.x, this.preMaximizeState.y);
+                if (this.preMaximizeState.width !== undefined) {
+                    this.width = this.preMaximizeState.width;
+                    this.mainElement.style.width = `${this.width}px`;
+                } else {
+                    this.mainElement.style.width = "";
+                }
+                if (this.preMaximizeState.height !== undefined) {
+                    this.height = this.preMaximizeState.height;
+                    this.mainElement.style.height = `${this.height}px`;
+                } else {
+                    this.mainElement.style.height = "";
+                }
+                this.preMaximizeState = null;
+            }
+            this.isMaximized = false;
+            this.mainElement.classList.remove("window-maximized");
+            this.desktopResizeObserver?.disconnect();
+            this.desktopResizeObserver = null;
+        } else {
+            // Save current state and maximize
+            this.preMaximizeState = { x: this.x, y: this.y, width: this.width, height: this.height };
+
+            this.applyMaximizeBounds(desktop);
+
+            this.isMaximized = true;
+            this.mainElement.classList.add("window-maximized");
+
+            // Keep bounds in sync when the desktop is resized
+            this.desktopResizeObserver = new ResizeObserver(() => {
+                if (this.isMaximized) this.applyMaximizeBounds(desktop);
+            });
+            this.desktopResizeObserver.observe(desktop);
+        }
     }
 
     updatePosition(x: number, y: number): void {
@@ -62,6 +131,9 @@ abstract class WebosWindow {
             if ((e.target as HTMLElement).classList.contains("window-btn")) {
                 return;
             }
+
+            // Disable dragging when maximized
+            if (this.isMaximized) return;
 
             // Bring window to front
             const focusEvent = new CustomEvent("webos-window", {
@@ -103,6 +175,9 @@ abstract class WebosWindow {
         this.mainElement.appendChild(resizeHandle);
 
         const onMouseDown = (e: MouseEvent) => {
+            // Disable resizing when maximized
+            if (this.isMaximized) return;
+
             this.isResizing = true;
             this.resizeStartX = e.clientX;
             this.resizeStartY = e.clientY;
@@ -151,7 +226,7 @@ abstract class WebosWindow {
         closeButton.classList.add("window-btn", "window-close");
         minimizeButton.classList.add("window-btn", "window-minimize");
         maximizeButton.classList.add("window-btn", "window-maximize");
-        maximizeButton.disabled = true; // Placeholder for future functionality
+        maximizeButton.disabled = !options.maximize;
         minimizeButton.disabled = !options.minimize;
         // Append actions to buttons
         closeButton.addEventListener("click", () => {
@@ -164,12 +239,23 @@ abstract class WebosWindow {
             window.dispatchEvent(event);
         });
 
+        maximizeButton.addEventListener("click", () => {
+            const event = new CustomEvent("webos-window", { detail: { uuid, action: "maximize" } });
+            window.dispatchEvent(event);
+        });
+
         buttonContainer.appendChild(closeButton);
         buttonContainer.appendChild(minimizeButton);
         buttonContainer.appendChild(maximizeButton);
 
         return header;
     }
+
+    static closeWindow(uuid: string): void {
+        const event = new CustomEvent("webos-window", { detail: { uuid, action: "close" } });
+        window.dispatchEvent(event);
+    }
+
 
     applyResize(newWidth: number, newHeight: number): void {
         this.width = newWidth;

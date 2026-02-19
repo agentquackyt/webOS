@@ -62,6 +62,7 @@ html, body {
     width: 100px;
     height: 100px;
     transition: opacity 0.1s;
+    transition-delay: .2s;
 }
 
 .desktop-icon.dragging {

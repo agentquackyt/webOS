@@ -7,6 +7,17 @@
     margin: 0;
     display: flex;
     flex-direction: column;
+    user-select: none;
+}
+
+.window.window-maximized {
+    border-radius: calc(var(--os-window-border-radius)/2);
+    box-shadow: none;
+}
+
+.window.window-maximized .window-header {
+    border-radius: calc(var(--os-window-border-radius)/2);
+
 }
 
 .window-header {
@@ -51,9 +62,11 @@
 .window-minimize {
     background: var(--os-btn-header-minimize);
 }
+
 .window-maximize {
     background: var(--os-btn-header-maximize);
 }
+
 .window-close {
     background: var(--os-btn-header-close);
 }

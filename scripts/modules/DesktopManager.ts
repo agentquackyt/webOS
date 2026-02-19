@@ -90,6 +90,7 @@ class DesktopManager {
     private setupIconDragging(icon: HTMLElement, appName: string): void {
         let isDragging = false;
         let hasMoved = false;
+        let originPos: IconPosition | null = null;
 
         const onMouseDown = (e: MouseEvent) => {
             // Only drag on left click and not on double click
@@ -99,6 +100,7 @@ class DesktopManager {
             hasMoved = false;
             this.draggedIcon = icon;
             this.draggedAppName = appName;
+            originPos = this.iconPositions.get(appName) ?? null;
 
             const rect = icon.getBoundingClientRect();
             this.dragOffsetX = e.clientX - rect.left;
@@ -133,16 +135,28 @@ class DesktopManager {
                 const y = e.clientY - desktopRect.top - this.dragOffsetY;
 
                 const snappedPos = this.snapToGrid(x, y);
-                this.draggedIcon.style.left = `${snappedPos.x}px`;
-                this.draggedIcon.style.top = `${snappedPos.y}px`;
 
-                // Save position
-                this.iconPositions.set(this.draggedAppName, snappedPos);
-                this.saveIconPositions();
+                // Check if the target cell is already occupied by another icon
+                const occupied = [...this.iconPositions.entries()].some(
+                    ([name, pos]) => name !== this.draggedAppName &&
+                        pos.x === snappedPos.x && pos.y === snappedPos.y
+                );
+
+                if (occupied && originPos) {
+                    // Snap back to original position
+                    this.draggedIcon.style.left = `${originPos.x}px`;
+                    this.draggedIcon.style.top  = `${originPos.y}px`;
+                } else {
+                    this.draggedIcon.style.left = `${snappedPos.x}px`;
+                    this.draggedIcon.style.top  = `${snappedPos.y}px`;
+                    this.iconPositions.set(this.draggedAppName, snappedPos);
+                    this.saveIconPositions();
+                }
             }
 
             this.draggedIcon = null;
             this.draggedAppName = null;
+            originPos = null;
         };
 
         icon.addEventListener('mousedown', onMouseDown);
@@ -213,6 +227,11 @@ class DesktopManager {
                 console.error('[DesktopManager] Failed to load icon positions:', e);
             }
         }
+    }
+
+    public getApps(): string[] {
+        // Names of registered apps
+        return [...this.apps.values()].map(app => app.getName());
     }
 }
 

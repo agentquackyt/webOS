@@ -1,14 +1,15 @@
-import AnnoCalculatorApp from "./apps/AnnoCalculator";
+import MarsIncApp from "./apps/MarsIncApp";
 import BrowserApp from "./apps/Browser";
 import CalculatorApp from "./apps/Calculator";
 import PaintApp from "./apps/Drawing";
-import { AboutMeApp } from "./apps/Misc";
+import { AboutMeApp } from "./apps/AboutMe";
 import RickRollApp from "./apps/RickRoll";
-import { App } from "./modules/App";
 import { DesktopManager } from "./modules/DesktopManager";
 import { TaskbarManager } from "./modules/TaskbarManager";
 import { ContextMenuManager } from "./modules/ContextMenuManager";
 import GrapherApp from "./apps/Grapher";
+import { SettingsManager } from "./modules/Settings";
+import { GamesHubApp } from "./apps/GamesHub";
 
 const lockScreenElement = document.getElementById("os-lock-screen");
 const lockTimeElement = document.getElementById("lock-time");
@@ -17,26 +18,18 @@ let isLocked = true;
 
 function setupWindows() {
     // Initialize TaskbarManager and ContextMenuManager
+    SettingsManager.getInstance();
     TaskbarManager.getInstance();
     ContextMenuManager.getInstance();
-    
-    const testApp = new App("Test App");
-    const aboutMeApp = new AboutMeApp();
-    const rickRollApp = new RickRollApp();
-    const annoCalculatorApp = new AnnoCalculatorApp();
-    const calculatorApp = new CalculatorApp();
-    const browserApp = new BrowserApp();
-    const paintApp = new PaintApp();
-    const grapherApp = new GrapherApp();
 
-    DesktopManager.getInstance().registerApp(aboutMeApp);
-    // DesktopManager.getInstance().registerApp(testApp);
-    DesktopManager.getInstance().registerApp(rickRollApp);
-    DesktopManager.getInstance().registerApp(calculatorApp);
-    DesktopManager.getInstance().registerApp(browserApp);
-    DesktopManager.getInstance().registerApp(paintApp);
-    DesktopManager.getInstance().registerApp(grapherApp);
-    DesktopManager.getInstance().registerApp(annoCalculatorApp);
+    DesktopManager.getInstance().registerApp(new AboutMeApp());
+    DesktopManager.getInstance().registerApp(new RickRollApp());
+    DesktopManager.getInstance().registerApp(new CalculatorApp());
+    DesktopManager.getInstance().registerApp(new BrowserApp());
+    DesktopManager.getInstance().registerApp(new PaintApp());
+    DesktopManager.getInstance().registerApp(new GrapherApp());
+    DesktopManager.getInstance().registerApp(new MarsIncApp());
+    DesktopManager.getInstance().registerApp(new GamesHubApp());
 
     // window.dispatchEvent(new CustomEvent("webos-desktop", { detail: { uuid: aboutMeApp.getUUID(), action: "launch" } }));
 }
